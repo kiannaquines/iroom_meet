@@ -76,7 +76,7 @@
 
     <img src="Pictures/person_icon.png" alt="person_icon" class="person_icon">
 
-    <h5 class="fw-bold">PARENT</h5>
+    <h5 class="fw-bold">PARENT REGISTRATION</h5>
     <p class="text-muted">Create a new parent account</p>
     
 
@@ -84,6 +84,7 @@
       <label class="form-label">Parent Username:</label>
       <input type="text" class="form-control" name="parent_name" placeholder="Enter parent username">
 
+      <div class="form-group">
       <label class="form-label">Student Name:</label>
       <select name="student" class="form-select">
         <option value="" disabled selected>Select student</option>
@@ -95,7 +96,9 @@
         }
         ?>
       </select>
-
+      <span class="text-danger" style="text-align: start !important; font-size: 10px;">Do not select the student that is not your daughter/son.</span>
+      </div>
+      
       <label class="form-label">Student ID:</label>
       <input type="text" class="form-control" name="student_id" placeholder="Enter student ID">
 
