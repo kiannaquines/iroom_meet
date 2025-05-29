@@ -2,8 +2,6 @@
 
 session_start();
 include './backend/conn.php';
-include './backend/logic/auth_check.php';
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
