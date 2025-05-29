@@ -165,19 +165,17 @@ include './backend/conn.php';
         var eventWhen = event.event_when || '';
         var eventWhere = event.event_where || '';
         var eventWho = event.event_who || '';
-
         newEventCard.innerHTML = `
-        <div class="event-view-mode">
-          <h6 class="event-title">${eventName}</h6>
-          <p class="event-details">
-            <strong>What:</strong> <span class="event-what">${eventWhat}</span><br />
-            <strong>When:</strong> <span class="event-when">${eventWhen}</span><br />
-            <strong>Where:</strong> <span class="event-where">${eventWhere}</span><br />
-            <strong>Who:</strong> <span class="event-who">${eventWho}</span>
-          </p>
-        </div>
-      `;
-
+          <div class="event-view-mode">
+            <h6 class="event-title">${eventName}</h6>
+            <p class="event-details">
+              <strong>What:</strong> <span class="event-what">${eventWhat}</span><br />
+              <strong>When:</strong> <span class="event-when">${eventWhen}</span><br />
+              <strong>Where:</strong> <span class="event-where">${eventWhere}</span><br />
+              <strong>Who:</strong> <span class="event-who">${eventWho}</span>
+            </p>
+          </div>
+        `;
         eventsContainer.appendChild(newEventCard);
       }
 
