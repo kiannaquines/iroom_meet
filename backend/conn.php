@@ -1,5 +1,5 @@
 <?php
-// testing comment
+
 $conn = new mysqli("localhost", "root", "", "iroom_meet");
 
 if ($conn->connect_error) {

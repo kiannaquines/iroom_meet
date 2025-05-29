@@ -118,9 +118,6 @@ include './backend/conn.php';
       <img src="Pictures/person_icon.png" alt="person_icon" class="mb-2 person_icon" />
       <h6><?php echo ucfirst($_SESSION['username']); ?></h6>
       <p>Section</p>
-      <div class="profile-edit">
-        <a href="AdviserEdit.php" class="btn btn-primary">Edit</a>
-      </div>
     </div>
   </div>
 

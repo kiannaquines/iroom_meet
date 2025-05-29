@@ -27,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['email'] = $user['email'];
         $_SESSION['contact_no'] = $user['contact_no'];
         $_SESSION['is_loggedin'] = true;
+        $_SESSION['student_name'] = $user['student_name'] ?? '';
         $_SESSION['role'] = 'parent';
         header("Location: ./../../ParentDashboard.php");
         exit;

@@ -1,6 +1,8 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,11 +116,12 @@ include './backend/conn.php';
   <?php include './backend/includes/_header.php'; ?>
 
   <div class="profile-card mb-4">
-    <div class="mt-3">
+    <di class="mt-3">
       <img src="Pictures/person_icon.png" alt="person_icon" class="mb-2 person_icon" />
-      <h6><?php echo ucfirst($_SESSION['username']); ?></h6>
-      <p>Section</p>
-      <div class="profile-edit">
+      <h6><?php echo ucfirst($username); ?></h6>
+      <span>Section: <?php echo ucfirst($section); ?></span> </br>
+      <span>Email: <?php echo ucfirst($email); ?></span> </br>
+      <div class="profile-edit mt-2">
         <a href="AdviserEdit.php" class="btn btn-primary">Edit</a>
       </div>
     </div>

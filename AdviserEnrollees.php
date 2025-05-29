@@ -1,6 +1,7 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,7 +26,7 @@ include './backend/conn.php';
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="30" height="30">
-    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $_SESSION['username']; ?></h5>
+    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $username; ?></h5>
   </div>
 
   <?php include './backend/includes/_header.php'; ?>
@@ -131,6 +132,10 @@ include './backend/conn.php';
             <div class="mb-3">
               <label for="student-lrn" class="form-label">LRN</label>
               <input type="text" class="form-control" name="lrn" id="student-lrn" required>
+            </div>
+            <div class="mb-3">
+              <label for="student-section" class="form-label">Section</label>
+              <input type="text" class="form-control" name="section" id="student-section" required>
             </div>
           </div>
           <div class="modal-footer">

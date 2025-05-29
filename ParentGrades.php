@@ -24,7 +24,7 @@ include './backend/conn.php';
 <body class="container py-4">
 
   <div class="d-flex align-items-center my-3">
-    <a href="AdviserDashboard.php" class="text-decoration-none text-dark me-3">
+    <a href="ParentDashboard.php" class="text-decoration-none text-dark me-3">
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="30" height="30">
@@ -36,7 +36,6 @@ include './backend/conn.php';
   <div class="card p-3 mb-3">
     <div class="d-flex align-items-center justify-content-between mb-2">
       <h6><strong>GRADES</strong></h6>
-      <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addGradeModal">Add Grade</button>
     </div>
     <div class="card p-3 mb-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
@@ -61,12 +60,11 @@ include './backend/conn.php';
               <th>Grade</th>
               <th>Quarter</th>
               <th>Date Encoded</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <?php
-            $query = mysqli_query($conn, "SELECT * FROM grades ORDER BY date DESC");
+            $query = mysqli_query($conn, "SELECT * FROM grades WHERE student = '" . $_SESSION['student_name'] . "' ORDER BY date DESC");
             while ($row = mysqli_fetch_assoc($query)) {
               echo '<tr data-quarter="' . $row['quarter'] . '">
                       <td>' . htmlspecialchars($row['student']) . '</td>
@@ -74,79 +72,7 @@ include './backend/conn.php';
                       <td>' . htmlspecialchars($row['grade']) . '</td>
                       <td>' . htmlspecialchars($row['quarter']) . '</td>
                       <td>' . htmlspecialchars($row['date']) . '</td>
-                      <td>
-                        <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#editGradeModal' . $row['id'] . '">
-                          <i class="bi bi-pencil-square"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteGradeModal' . $row['id'] . '">
-                          <i class="bi bi-trash"></i>
-                        </button>
-                      </td>
                     </tr>';
-
-              // Edit Modal
-              echo '<div class="modal fade" id="editGradeModal' . $row['id'] . '" tabindex="-1" aria-labelledby="editGradeModalLabel' . $row['id'] . '" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <form action="./backend/logic/grade_update.php" method="POST">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="editGradeModalLabel' . $row['id'] . '">Edit Grade</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                              <input type="hidden" name="id" value="' . $row['id'] . '">
-                              <div class="mb-3">
-                                <label for="student' . $row['id'] . '" class="form-label">Student Name</label>
-                                <input type="text" class="form-control" name="student" id="student' . $row['id'] . '" value="' . htmlspecialchars($row['student']) . '" required>
-                              </div>
-                              <div class="mb-3">
-                                <label for="subject' . $row['id'] . '" class="form-label">Subject</label>
-                                <input type="text" class="form-control" name="subject" id="subject' . $row['id'] . '" value="' . htmlspecialchars($row['subject']) . '" required>
-                              </div>
-                              <div class="mb-3">
-                                <label for="grade' . $row['id'] . '" class="form-label">Grade</label>
-                                <input type="number" class="form-control" name="grade" id="grade' . $row['id'] . '" value="' . htmlspecialchars($row['grade']) . '" required min="0" max="100">
-                              </div>
-                              <div class="mb-3">
-                                <label for="quarter' . $row['id'] . '" class="form-label">Quarter</label>
-                                <select class="form-select" name="quarter" id="quarter' . $row['id'] . '" required>
-                                  <option value="1st Quarter"' . ($row['quarter'] == '1st Quarter' ? ' selected' : '') . '>1st Quarter</option>
-                                  <option value="2nd Quarter"' . ($row['quarter'] == '2nd Quarter' ? ' selected' : '') . '>2nd Quarter</option>
-                                  <option value="3rd Quarter"' . ($row['quarter'] == '3rd Quarter' ? ' selected' : '') . '>3rd Quarter</option>
-                                  <option value="4th Quarter"' . ($row['quarter'] == '4th Quarter' ? ' selected' : '') . '>4th Quarter</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                              <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>';
-
-              // Delete Modal
-              echo '<div class="modal fade" id="deleteGradeModal' . $row['id'] . '" tabindex="-1" aria-labelledby="deleteGradeModalLabel' . $row['id'] . '" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <form action="./backend/logic/grade_delete.php" method="POST">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="deleteGradeModalLabel' . $row['id'] . '">Delete Grade</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                              <input type="hidden" name="id" value="' . $row['id'] . '">
-                              <p>Are you sure you want to delete this grade record?</p>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                              <button type="submit" class="btn btn-danger">Delete</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>';
             }
             ?>
           </tbody>

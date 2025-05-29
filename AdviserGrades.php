@@ -1,6 +1,8 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +30,7 @@ include './backend/conn.php';
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="30" height="30">
-    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $_SESSION['username']; ?></h5>
+    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $username; ?></h5>
   </div>
 
   <?php include './backend/includes/_header.php'; ?>
@@ -66,10 +68,10 @@ include './backend/conn.php';
           </thead>
           <tbody>
             <?php
-            $query = mysqli_query($conn, "SELECT * FROM grades ORDER BY date DESC");
+            $query = mysqli_query($conn, "SELECT * FROM grades INNER JOIN student ON grades.student = student.id ORDER BY date DESC");
             while ($row = mysqli_fetch_assoc($query)) {
               echo '<tr data-quarter="' . $row['quarter'] . '">
-                      <td>' . htmlspecialchars($row['student']) . '</td>
+                      <td>' . htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['middlename']) . ' ' . htmlspecialchars($row['lastname']) . '</td>
                       <td>' . htmlspecialchars($row['subject']) . '</td>
                       <td>' . htmlspecialchars($row['grade']) . '</td>
                       <td>' . htmlspecialchars($row['quarter']) . '</td>
@@ -96,7 +98,14 @@ include './backend/conn.php';
                               <input type="hidden" name="id" value="' . $row['id'] . '">
                               <div class="mb-3">
                                 <label for="student' . $row['id'] . '" class="form-label">Student Name</label>
-                                <input type="text" class="form-control" name="student" id="student' . $row['id'] . '" value="' . htmlspecialchars($row['student']) . '" required>
+                                <select class="form-select" name="student" id="student' . $row['id'] . '" required>
+                                  <option value="">Select Student</option>';
+                                $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
+                                while ($student = mysqli_fetch_assoc($studentsQuery)) {
+                                  echo '<option value="' . $student['id'] . '"' . ($row['student'] == $student['id'] ? ' selected' : '') . '>' . htmlspecialchars($student['firstname']) . ' ' . htmlspecialchars($student['middlename']) . ' ' . htmlspecialchars($student['lastname']) . '</option>';
+                                }
+                                echo '</select>
+                            
                               </div>
                               <div class="mb-3">
                                 <label for="subject' . $row['id'] . '" class="form-label">Subject</label>
@@ -165,7 +174,15 @@ include './backend/conn.php';
           <div class="modal-body">
             <div class="mb-3">
               <label for="student" class="form-label">Student Name</label>
-              <input type="text" class="form-control" name="student" id="student" required>
+              <select class="form-select" name="student" id="student" required>
+                <option value="">Select Student</option>
+                <?php
+                $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
+                while ($student = mysqli_fetch_assoc($studentsQuery)) {
+                  echo '<option value="' . $student['id'] . '">' . htmlspecialchars($student['firstname']) . ' ' . htmlspecialchars($student['middlename']) . ' ' . htmlspecialchars($student['lastname']) . '</option>';
+                }
+                ?>
+              </select>
             </div>
             <div class="mb-3">
               <label for="subject" class="form-label">Subject</label>

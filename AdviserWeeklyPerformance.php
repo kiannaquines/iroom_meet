@@ -2,6 +2,7 @@
 session_start();
 
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,14 +21,13 @@ include './backend/conn.php';
   </style>
 </head>
 
-
 <body class="container py-4">
   <div class="d-flex align-items-center my-3">
     <a href="AdviserDashboard.php" class="text-decoration-none text-dark me-3">
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="30" height="30">
-    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $_SESSION['username']; ?></h5>
+    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo htmlspecialchars($username); ?></h5>
   </div>
 
   <?php include './backend/includes/_header.php'; ?>
@@ -114,62 +114,76 @@ include './backend/conn.php';
       </thead>
       <tbody>
         <?php
-        $query = mysqli_query($conn, "SELECT * FROM weekly_performance");
+        $query = mysqli_query($conn, "SELECT weekly_performance.*, student.firstname, student.middlename, student.lastname 
+                                     FROM weekly_performance 
+                                     INNER JOIN student ON weekly_performance.student = student.id 
+                                     ORDER BY weekly_performance.id DESC");
         $counter = 1;
         while ($row = mysqli_fetch_assoc($query)) {
           echo '<tr>
                 <td>' . $counter++ . '</td>
-                <td>' . htmlspecialchars($row['name']) . '</td>
-                <td>' . $row['m01'] . '</td>
-                <td>' . $row['m02'] . '</td>
-                <td>' . $row['m03'] . '</td>
-                <td>' . $row['m04'] . '</td>
+                <td>' . htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['middlename']) . ' ' . htmlspecialchars($row['lastname']) . '</td>
+                <td>' . htmlspecialchars($row['m01']) . '</td>
+                <td>' . htmlspecialchars($row['m02']) . '</td>
+                <td>' . htmlspecialchars($row['m03']) . '</td>
+                <td>' . htmlspecialchars($row['m04']) . '</td>
                 <td>
                   <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#editModal' . $row['id'] . '">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <a href="./backend/logic/weekly_perf_delete.php?id=' . $row['id'] . '" class="btn btn-sm btn-danger" onclick="return confirm(\'Are you sure?\')">
+                  <a href="./backend/logic/weekly_perf_delete.php?id=' . $row['id'] . '" class="btn btn-sm btn-danger" onclick="return confirm(\'Are you sure you want to delete this record?\')">
                     <i class="bi bi-trash"></i>
                   </a>
                 </td>
               </tr>';
 
-          echo '<div class="modal fade" id="editModal'.$row['id'].'" tabindex="-1" aria-labelledby="editGrade'.$row['id'].'" aria-hidden="true">
+          // Edit Modal for each row
+          echo '<div class="modal fade" id="editModal' . $row['id'] . '" tabindex="-1" aria-labelledby="editModalLabel' . $row['id'] . '" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
-                    <form method="POST" action="./backend/logic/weekly_perf_update.php" class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title">Edit Performance</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      <h5 class="modal-title" id="editModalLabel' . $row['id'] . '">Edit Performance</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                      <input type="hidden" name="id" value="' . $row['id'] . '">
-                      <div class="mb-2">
-                        <label>Name</label>
-                        <input type="text" class="form-control" name="name" value="' . htmlspecialchars($row['name']) . '" required>
+                    <form method="POST" action="./backend/logic/weekly_perf_update.php">
+                      <div class="modal-body">
+                        <input type="hidden" name="id" value="' . $row['id'] . '">
+                        <div class="mb-3">
+                          <label class="form-label">Name</label>
+                          <select class="form-select" name="student" required>
+                            <option value="">Select Student</option>';
+                            $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
+                            while ($student = mysqli_fetch_assoc($studentsQuery)) {
+                              $selected = ($row['student'] == $student['id']) ? 'selected' : '';
+                              echo '<option value="' . $student['id'] . '" ' . $selected . '>' 
+                                   . htmlspecialchars($student['firstname']) . ' ' 
+                                   . htmlspecialchars($student['middlename']) . ' ' 
+                                   . htmlspecialchars($student['lastname']) . '</option>';
+                            }
+                          echo '</select>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">M01</label>
+                          <input type="number" class="form-control" name="m01" value="' . htmlspecialchars($row['m01']) . '" min="1" max="10" required>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">M02</label>
+                          <input type="number" class="form-control" name="m02" value="' . htmlspecialchars($row['m02']) . '" min="1" max="10" required>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">M03</label>
+                          <input type="number" class="form-control" name="m03" value="' . htmlspecialchars($row['m03']) . '" min="1" max="10" required>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">M04</label>
+                          <input type="number" class="form-control" name="m04" value="' . htmlspecialchars($row['m04']) . '" min="1" max="10" required>
+                        </div>
                       </div>
-                      <div class="mb-2">
-                        <label>M01</label>
-                        <input type="number" class="form-control" name="m01" value="' . $row['m01'] . '" required>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                       </div>
-                      <div class="mb-2">
-                        <label>M02</label>
-                        <input type="number" class="form-control" name="m02" value="' . $row['m02'] . '" required>
-                      </div>
-                      <div class="mb-2">
-                        <label>M03</label>
-                        <input type="number" class="form-control" name="m03" value="' . $row['m03'] . '" required>
-                      </div>
-                      <div class="mb-2">
-                        <label>M04</label>
-                        <input type="number" class="form-control" name="m04" value="' . $row['m04'] . '" required>
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary">Save</button>
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                  </form>
+                    </form>
                   </div>
                 </div>
               </div>';
@@ -180,44 +194,56 @@ include './backend/conn.php';
   </div>
 
   <!-- Add Modal -->
-  <div class="modal fade" id="addperf" tabindex="-1" aria-labelledby="addperf" aria-hidden="true">
+  <div class="modal fade" id="addperf" tabindex="-1" aria-labelledby="addperfLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <form method="POST" action="./backend/logic/weekly_perf_create.php" class="modal-content">
+      <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Performance</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <h5 class="modal-title" id="addperfLabel">Add Performance</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <div class="mb-2">
-            <label>Name</label>
-            <input type="text" class="form-control" name="name" required>
+        <form method="POST" action="./backend/logic/weekly_perf_create.php">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <select class="form-select" name="student" required>
+                <option value="">Select Student</option>
+                <?php
+                $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
+                while ($student = mysqli_fetch_assoc($studentsQuery)) {
+                  echo '<option value="' . $student['id'] . '">' 
+                       . htmlspecialchars($student['firstname']) . ' ' 
+                       . htmlspecialchars($student['middlename']) . ' ' 
+                       . htmlspecialchars($student['lastname']) . '</option>';
+                }
+                ?>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">M01</label>
+              <input type="number" class="form-control" name="m01" min="1" max="10" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">M02</label>
+              <input type="number" class="form-control" name="m02" min="1" max="10" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">M03</label>
+              <input type="number" class="form-control" name="m03" min="1" max="10" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">M04</label>
+              <input type="number" class="form-control" name="m04" min="1" max="10" required>
+            </div>
           </div>
-          <div class="mb-2">
-            <label>M01</label>
-            <input type="number" class="form-control" name="m01" required>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Add Performance</button>
           </div>
-          <div class="mb-2">
-            <label>M02</label>
-            <input type="number" class="form-control" name="m02" required>
-          </div>
-          <div class="mb-2">
-            <label>M03</label>
-            <input type="number" class="form-control" name="m03" required>
-          </div>
-          <div class="mb-2">
-            <label>M04</label>
-            <input type="number" class="form-control" name="m04" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Add</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

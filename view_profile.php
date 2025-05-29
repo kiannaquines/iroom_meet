@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 include './backend/conn.php';
 ?>
@@ -8,11 +9,12 @@ include './backend/conn.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parent Profile Edit</title>
+  <title>Adviser Profile Edit</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     body {
+
       background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
       min-height: 100vh;
     }
@@ -46,7 +48,7 @@ include './backend/conn.php';
 
   <body class="container py-2">
     <div class="d-flex align-items-center my-3">
-      <a href="ParentDashboard.php" class="text-decoration-none text-dark me-3">
+      <a href="ParentEnrollees.php" class="text-decoration-none text-dark me-3">
         <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
       </a>
     </div>
@@ -56,17 +58,12 @@ include './backend/conn.php';
         <img src="Pictures/person_icon.png" alt="person_icon" class="mb-2 person_icon" />
       </div>
       <?php
-      $adviser_id = $_SESSION['id'] ?? null;
+      $adviser = $_GET['adviser'];
 
-      if (!$adviser_id) {
-        echo "<div class='alert alert-danger'>Parent ID not found in session.</div>";
-        exit;
-      }
-
-      $query = mysqli_query($conn, "SELECT * FROM parent WHERE id = '$adviser_id'");
+      $query = mysqli_query($conn, "SELECT * FROM adviser WHERE name = '$adviser'");
       $adviserData = mysqli_fetch_assoc($query);
       ?>
-      <form action="./backend/logic/profile_update.php" method="POST" class="card-section">
+      <form method="POST" class="card-section">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($adviser_id); ?>">
         <label class="form-label">Name:</label>
         <input type="text" class="form-control" name="name" placeholder="Edit name" value="<?php echo htmlspecialchars($adviserData['name']); ?>">
@@ -84,9 +81,13 @@ include './backend/conn.php';
         <label class="form-label">Contact No.:</label>
         <input type="text" class="form-control" name="contact_no" placeholder="Edit contact number" value="<?php echo htmlspecialchars($adviserData['contact_no']); ?>">
 
-        <button type="submit" class="btn btn-save">Save Changes</button>
+        <button type="button" onclick="back()" class="btn btn-save">Back</button>
       </form>
     </div>
   </body>
-
+    <script>
+        function back() {
+            window.location.href = 'ParentEnrollees.php';
+        }
+    </script>
 </html>

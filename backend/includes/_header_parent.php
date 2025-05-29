@@ -8,8 +8,8 @@
   <a href="ParentWeeklyPerformance.php" class="text-center text-decoration-none text-dark">
     <img src="Pictures/weeklyperformance_icon.png" width="60" alt="Performance" /><br>Weekly<br>Performance
   </a>
-  <a href="ParentEnrollees.php" class="text-center text-decoration-none text-dark">
-    <img src="Pictures/enrollees_icon.png" width="60" alt="Parent" /><br>Enrollees
+  <a href="ParentAdviser.php" class="text-center text-decoration-none text-dark">
+    <img src="Pictures/adviser_icon.png" width="60" alt="Adviser" /><br>Adviser
   </a>
   <a href="Logout.php" class="text-center text-decoration-none text-dark">
     <img src="Pictures/logout_icon.png" width="60" alt="Log Out" /><br>Log Out

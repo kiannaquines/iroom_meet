@@ -3,10 +3,10 @@ session_start();
 include './../conn.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
+    $student = $_POST['student'];
     $status = $_POST['status'];
 
-    $sql = "INSERT INTO `attendance`(`name`, `status`) VALUES ('$name','$status')";
+    $sql = "INSERT INTO `attendance`(`student`, `status`) VALUES ('$student','$status')";
 
     if (mysqli_query($conn, $sql)) {
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'adviser') {

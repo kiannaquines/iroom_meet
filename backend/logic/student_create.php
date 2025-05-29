@@ -7,12 +7,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $middlename = $_POST['middlename'];
     $lastname = $_POST['lastname'];
     $lrn = $_POST['lrn'];
+    $section = $_POST['section'];
 
     if (!$conn) {
         die("Database connection failed: " . mysqli_connect_error());
     }
 
-    $sql = "INSERT INTO `student`(`firstname`, `middlename`, `lastname`, `lrn`, `type`) VALUES ('$firstname','$middlename','$lastname','$lrn','student')";
+    $sql = "INSERT INTO `student`(`firstname`, `middlename`, `lastname`, `lrn`, `section`, `type`) VALUES ('$firstname','$middlename','$lastname','$lrn','$section','student')";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
