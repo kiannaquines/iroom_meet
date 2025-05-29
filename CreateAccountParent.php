@@ -78,11 +78,13 @@
 
     <!-- Role -->
     <h5 class="fw-bold">PARENT</h5>
+    <p class="text-muted">Create a new parent account</p>
+    
 
     <!-- Form -->
     <form action="./backend/logic/parent_create.php" method="POST">
-      <label class="form-label">Parent Name:</label>
-      <input type="text" class="form-control" name="parent_name" placeholder="Enter parent name">
+      <label class="form-label">Parent Username:</label>
+      <input type="text" class="form-control" name="parent_name" placeholder="Enter parent username">
 
       <label class="form-label">Student Name:</label>
       <input type="text" class="form-control" name="student_name" placeholder="Enter student name">

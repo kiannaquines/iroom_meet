@@ -31,8 +31,6 @@ include './backend/logic/auth_check.php';
     <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $_SESSION['username']; ?></h5>
   </div>
 
-
-
   <?php include './backend/includes/_header.php'; ?>
 
   <div class="card p-3 mb-4">

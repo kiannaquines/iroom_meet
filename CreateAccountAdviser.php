@@ -71,16 +71,13 @@
 </head>
 <body>
   <div class="profile-container">
-    <!-- Profile Image -->
-    <img src="Pictures/person_icon.png" alt="person_icon" class="person_icon">
-
     <!-- Role -->
-    <h5 class="fw-bold">ADVISER</h5>
-
+    <h3 class="fw-bold">Create Account</h3>
+    <p class="text-muted">Please fill in the details below to create an adviser account.</p>
     <!-- Form -->
     <form action="./backend/logic/adviser_create.php" method="POST">
-      <label class="form-label">Name:</label>
-      <input type="text" class="form-control" name="name" placeholder="Enter name">
+      <label class="form-label">Adviser Username:</label>
+      <input type="text" class="form-control" name="name" placeholder="Enter adviser username">
 
       <label class="form-label">School ID:</label>
       <input type="text" class="form-control" name="school_id" placeholder="Enter school ID">
