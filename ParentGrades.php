@@ -65,19 +65,22 @@ include './backend/logic/get_profile.php';
           </thead>
           <tbody>
             <?php
-            $query = mysqli_query($conn, 
+            $query = mysqli_query(
+              $conn,
               "SELECT 
-                          student.firstname, 
-                          student.lastname,
-                          grades.subject,
-                          grades.grade,
-                          grades.quarter,
-                          grades.date
-                      FROM parent
-                      INNER JOIN grades ON parent.student = grades.student
-                      OUTER JOIN student ON parent.student = student.id
-                      WHERE parent.id = '$id'
-          ");
+      student.firstname, 
+      student.lastname,
+      grades.subject,
+      grades.grade,
+      grades.quarter,
+      grades.date
+   FROM parent
+   INNER JOIN grades ON parent.student = grades.student
+   LEFT JOIN student ON parent.student = student.id
+   WHERE parent.id = '$id'
+"
+            );
+
             while ($row = mysqli_fetch_assoc($query)) {
               echo '<tr data-quarter="' . $row['quarter'] . '">
                       <td>' . htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['lastname']) . '</td>	
