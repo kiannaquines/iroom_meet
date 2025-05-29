@@ -131,9 +131,7 @@ include './backend/conn.php';
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const eventsContainer = document.getElementById('events-container');
-      const addEventButton = document.getElementById('add-event');
       const loadingDiv = document.getElementById('loading');
-      let currentDeleteEventId = null;
 
       function loadEvents() {
         fetch('backend/logic/event_crud.php?action=read')
@@ -143,7 +141,7 @@ include './backend/conn.php';
             eventsContainer.innerHTML = '';
 
             if (events.length === 0) {
-              eventsContainer.innerHTML = '<p class="text-muted text-center">No events found. Click "Add Event" to create your first event.</p>';
+              eventsContainer.innerHTML = '<p class="text-muted text-center">No events found.</p>';
               return;
             }
 
@@ -161,7 +159,6 @@ include './backend/conn.php';
       function createEventCard(event) {
         const newEventCard = document.createElement('div');
         newEventCard.classList.add('event-card');
-        newEventCard.setAttribute('data-event-id', event.id || 'new');
 
         var eventName = event.event_name || 'New Event';
         var eventWhat = event.event_what || '';
@@ -170,36 +167,41 @@ include './backend/conn.php';
         var eventWho = event.event_who || '';
 
         newEventCard.innerHTML = `
-          <div class="event-view-mode">
-            <h6 class="event-title">${eventName}</h6>
-            <p class="event-details">
-              <strong>What:</strong> <span class="event-what">${eventWhat}</span><br />
-              <strong>When:</strong> <span class="event-when">${eventWhen}</span><br />
-              <strong>Where:</strong> <span class="event-where">${eventWhere}</span><br />
-              <strong>Who:</strong> <span class="event-who">${eventWho}</span>
-            </p>
-          </div>
-          <div class="event-edit-mode" style="display: none;">
-            <input type="text" class="form-control mb-2 event-name-input" 
-             placeholder="Event Name" value="${event.event_name || ''}">
-            <input type="text" class="form-control mb-2 event-what-input" 
-                  placeholder="What" value="${event.event_what || ''}">
-            <input type="text" class="form-control mb-2 event-when-input" 
-                  placeholder="When" value="${event.event_when || ''}">
-            <input type="text" class="form-control mb-2 event-where-input" 
-                  placeholder="Where" value="${event.event_where || ''}">
-            <input type="text" class="form-control mb-2 event-who-input" 
-             placeholder="Who" value="${event.event_who || ''}">
-          </div>
-        `;
+        <div class="event-view-mode">
+          <h6 class="event-title">${eventName}</h6>
+          <p class="event-details">
+            <strong>What:</strong> <span class="event-what">${eventWhat}</span><br />
+            <strong>When:</strong> <span class="event-when">${eventWhen}</span><br />
+            <strong>Where:</strong> <span class="event-where">${eventWhere}</span><br />
+            <strong>Who:</strong> <span class="event-who">${eventWho}</span>
+          </p>
+        </div>
+      `;
 
         eventsContainer.appendChild(newEventCard);
-        setupEventCardHandlers(newEventCard);
+      }
+
+      function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+
+        eventsContainer.insertBefore(alertDiv, eventsContainer.firstChild);
+
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 5000);
       }
 
       loadEvents();
     });
   </script>
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
