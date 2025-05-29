@@ -17,7 +17,6 @@
       align-items: center;
     }
     .profile-container {
-      /* background: #fff; */ /* Remove white background */
       padding: 30px 20px;
       border-radius: 15px;
       width: 100%;

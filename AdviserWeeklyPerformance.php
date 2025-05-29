@@ -101,7 +101,7 @@ include './backend/logic/auth_check.php';
   <div class="card p-3 mb-3">
     <div class="d-flex align-items-center justify-content-between">
       <h6>Weekly Performance</h6>
-      <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addperf">Add Performance</button>
+      <button class="btn btn-outline-success mb-3" data-bs-toggle="modal" data-bs-target="#addperf">Add Performance</button>
     </div>
     <table class="table table-bordered">
       <thead class="table-light">
