@@ -3,6 +3,14 @@ session_start();
 include './backend/conn.php';
 include './backend/logic/get_profile.php';
 
+if (isset($_SESSION['success'])) {
+    $success_message = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
+if (isset($_SESSION['error'])) {
+    $error_message = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,17 +28,26 @@ include './backend/logic/get_profile.php';
       background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
       min-height: 100vh;
     }
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      min-width: 300px;
+    }
   </style>
 </head>
 
 <body class="container py-4">
+
+
 
   <div class="d-flex align-items-center my-3">
     <a href="AdviserDashboard.php" class="text-decoration-none text-dark me-3">
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="30" height="30">
-    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $username; ?></h5>
+    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo htmlspecialchars($username); ?></h5>
   </div>
 
   <?php include './backend/includes/_header.php'; ?>
@@ -68,92 +85,112 @@ include './backend/logic/get_profile.php';
           </thead>
           <tbody>
             <?php
-            $query = mysqli_query($conn, "SELECT * FROM grades INNER JOIN student ON grades.student = student.id ORDER BY date DESC");
-            while ($row = mysqli_fetch_assoc($query)) {
-              echo '<tr data-quarter="' . $row['quarter'] . '">
-                      <td>' . htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['middlename']) . ' ' . htmlspecialchars($row['lastname']) . '</td>
-                      <td>' . htmlspecialchars($row['subject']) . '</td>
-                      <td>' . htmlspecialchars($row['grade']) . '</td>
-                      <td>' . htmlspecialchars($row['quarter']) . '</td>
-                      <td>' . htmlspecialchars($row['date']) . '</td>
-                     <td>
-                        <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#editGradeModal' . $row['id'] . '">
-                          <i class="bi bi-pencil-square"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteGradeModal' . $row['id'] . '">
-                          <i class="bi bi-trash"></i>
-                        </button>
-                      </td>
-                    </tr>';
+            $query = mysqli_query($conn, "SELECT grades.*, student.firstname, student.middlename, student.lastname 
+                                         FROM grades 
+                                         INNER JOIN student ON grades.student = student.id 
+                                         ORDER BY grades.date DESC");
+            
+            if (!$query) {
+                echo '<tr><td colspan="6" class="text-danger">Error loading grades: ' . htmlspecialchars(mysqli_error($conn)) . '</td></tr>';
+            } elseif (mysqli_num_rows($query) == 0) {
+                echo '<tr><td colspan="6" class="text-muted">No grades found</td></tr>';
+            } else {
+                while ($row = mysqli_fetch_assoc($query)) {
+                    echo '<tr data-quarter="' . htmlspecialchars($row['quarter']) . '">
+                            <td>' . htmlspecialchars($row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname']) . '</td>
+                            <td>' . htmlspecialchars($row['subject']) . '</td>
+                            <td>' . htmlspecialchars($row['grade']) . '</td>
+                            <td>' . htmlspecialchars($row['quarter']) . '</td>
+                            <td>' . htmlspecialchars($row['date']) . '</td>
+                            <td>
+                              <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#editGradeModal' . $row['id'] . '">
+                                <i class="bi bi-pencil-square"></i>
+                              </button>
+                              <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteGradeModal' . $row['id'] . '">
+                                <i class="bi bi-trash"></i>
+                              </button>
+                            </td>
+                          </tr>';
 
-              echo '<div class="modal fade" id="editGradeModal' . $row['id'] . '" tabindex="-1" aria-labelledby="editGradeModalLabel' . $row['id'] . '" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <form action="./backend/logic/grade_update.php" method="POST">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="editGradeModalLabel' . $row['id'] . '">Edit Grade</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    echo '<div class="modal fade" id="editGradeModal' . $row['id'] . '" tabindex="-1" aria-labelledby="editGradeModalLabel' . $row['id'] . '" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <form action="./backend/logic/grade_update.php" method="POST">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="editGradeModalLabel' . $row['id'] . '">Edit Grade</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <input type="hidden" name="id" value="' . $row['id'] . '">
+                                    <div class="mb-3">
+                                      <label for="student' . $row['id'] . '" class="form-label">Student Name</label>
+                                      <select class="form-select" name="student" id="student' . $row['id'] . '" required>
+                                        <option value="">Select Student</option>';
+                                        
+                                        $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
+                                        if ($studentsQuery) {
+                                            while ($student = mysqli_fetch_assoc($studentsQuery)) {
+                                                echo '<option value="' . $student['id'] . '"' . 
+                                                     ($row['student'] == $student['id'] ? ' selected' : '') . '>' . 
+                                                     htmlspecialchars($student['firstname'] . ' ' . $student['middlename'] . ' ' . $student['lastname']) . 
+                                                     '</option>';
+                                            }
+                                        }
+                                        
+                                      echo '</select>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="subject' . $row['id'] . '" class="form-label">Subject</label>
+                                      <input type="text" class="form-control" name="subject" id="subject' . $row['id'] . '" 
+                                             value="' . htmlspecialchars($row['subject']) . '" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="grade' . $row['id'] . '" class="form-label">Grade</label>
+                                      <input type="number" class="form-control" name="grade" id="grade' . $row['id'] . '" 
+                                             value="' . htmlspecialchars($row['grade']) . '" required min="0" max="100">
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="quarter' . $row['id'] . '" class="form-label">Quarter</label>
+                                      <select class="form-select" name="quarter" id="quarter' . $row['id'] . '" required>
+                                        <option value="1st Quarter"' . ($row['quarter'] == '1st Quarter' ? ' selected' : '') . '>1st Quarter</option>
+                                        <option value="2nd Quarter"' . ($row['quarter'] == '2nd Quarter' ? ' selected' : '') . '>2nd Quarter</option>
+                                        <option value="3rd Quarter"' . ($row['quarter'] == '3rd Quarter' ? ' selected' : '') . '>3rd Quarter</option>
+                                        <option value="4th Quarter"' . ($row['quarter'] == '4th Quarter' ? ' selected' : '') . '>4th Quarter</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                  </div>
+                                </form>
+                              </div>
                             </div>
-                            <div class="modal-body">
-                              <input type="hidden" name="id" value="' . $row['id'] . '">
-                              <div class="mb-3">
-                                <label for="student' . $row['id'] . '" class="form-label">Student Name</label>
-                                <select class="form-select" name="student" id="student' . $row['id'] . '" required>
-                                  <option value="">Select Student</option>';
-                                $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
-                                while ($student = mysqli_fetch_assoc($studentsQuery)) {
-                                  echo '<option value="' . $student['id'] . '"' . ($row['student'] == $student['id'] ? ' selected' : '') . '>' . htmlspecialchars($student['firstname']) . ' ' . htmlspecialchars($student['middlename']) . ' ' . htmlspecialchars($student['lastname']) . '</option>';
-                                }
-                                echo '</select>
-                            
-                              </div>
-                              <div class="mb-3">
-                                <label for="subject' . $row['id'] . '" class="form-label">Subject</label>
-                                <input type="text" class="form-control" name="subject" id="subject' . $row['id'] . '" value="' . htmlspecialchars($row['subject']) . '" required>
-                              </div>
-                              <div class="mb-3">
-                                <label for="grade' . $row['id'] . '" class="form-label">Grade</label>
-                                <input type="number" class="form-control" name="grade" id="grade' . $row['id'] . '" value="' . htmlspecialchars($row['grade']) . '" required min="0" max="100">
-                              </div>
-                              <div class="mb-3">
-                                <label for="quarter' . $row['id'] . '" class="form-label">Quarter</label>
-                                <select class="form-select" name="quarter" id="quarter' . $row['id'] . '" required>
-                                  <option value="1st Quarter"' . ($row['quarter'] == '1st Quarter' ? ' selected' : '') . '>1st Quarter</option>
-                                  <option value="2nd Quarter"' . ($row['quarter'] == '2nd Quarter' ? ' selected' : '') . '>2nd Quarter</option>
-                                  <option value="3rd Quarter"' . ($row['quarter'] == '3rd Quarter' ? ' selected' : '') . '>3rd Quarter</option>
-                                  <option value="4th Quarter"' . ($row['quarter'] == '4th Quarter' ? ' selected' : '') . '>4th Quarter</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                              <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>';
+                          </div>';
 
-              echo '<div class="modal fade" id="deleteGradeModal' . $row['id'] . '" tabindex="-1" aria-labelledby="deleteGradeModalLabel' . $row['id'] . '" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <form action="./backend/logic/grade_delete.php" method="POST">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="deleteGradeModalLabel' . $row['id'] . '">Delete Grade</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    echo '<div class="modal fade" id="deleteGradeModal' . $row['id'] . '" tabindex="-1" aria-labelledby="deleteGradeModalLabel' . $row['id'] . '" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <form action="./backend/logic/grade_delete.php" method="POST">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteGradeModalLabel' . $row['id'] . '">Delete Grade</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <input type="hidden" name="id" value="' . $row['id'] . '">
+                                    <p>Are you sure you want to delete this grade record?</p>
+                                    <p><strong>Student:</strong> ' . htmlspecialchars($row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname']) . '</p>
+                                    <p><strong>Grade:</strong> ' . htmlspecialchars($row['grade']). '</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                  </div>
+                                </form>
+                              </div>
                             </div>
-                            <div class="modal-body">
-                              <input type="hidden" name="id" value="' . $row['id'] . '">
-                              <p>Are you sure you want to delete this grade record?</p>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                              <button type="submit" class="btn btn-danger">Delete</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>';
+                          </div>';
+                }
             }
             ?>
           </tbody>
@@ -162,7 +199,6 @@ include './backend/logic/get_profile.php';
     </div>
   </div>
 
-  <!-- Add Grade Modal -->
   <div class="modal fade" id="addGradeModal" tabindex="-1" aria-labelledby="addGradeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -178,8 +214,12 @@ include './backend/logic/get_profile.php';
                 <option value="">Select Student</option>
                 <?php
                 $studentsQuery = mysqli_query($conn, "SELECT * FROM student");
-                while ($student = mysqli_fetch_assoc($studentsQuery)) {
-                  echo '<option value="' . $student['id'] . '">' . htmlspecialchars($student['firstname']) . ' ' . htmlspecialchars($student['middlename']) . ' ' . htmlspecialchars($student['lastname']) . '</option>';
+                if ($studentsQuery) {
+                    while ($student = mysqli_fetch_assoc($studentsQuery)) {
+                        echo '<option value="' . $student['id'] . '">' . 
+                             htmlspecialchars($student['firstname'] . ' ' . $student['middlename'] . ' ' . $student['lastname']) . 
+                             '</option>';
+                    }
                 }
                 ?>
               </select>
@@ -226,6 +266,14 @@ include './backend/logic/get_profile.php';
         }
       });
     }
+
+    setTimeout(() => {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      });
+    }, 5000);
   </script>
 
 </body>
