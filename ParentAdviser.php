@@ -30,7 +30,7 @@ include './backend/logic/get_profile.php';
 <body class="container py-4">
 
   <div class="d-flex align-items-center my-3">
-    <a href="ParentDashboard.html" class="text-decoration-none text-dark me-3">
+    <a href="ParentDashboard.php" class="text-decoration-none text-dark me-3">
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="50" height="50">

@@ -1,7 +1,7 @@
 <?php
-
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
