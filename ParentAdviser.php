@@ -1,6 +1,7 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +34,7 @@ include './backend/conn.php';
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="50" height="50">
-    <h5 class="mb-0"><?php echo ucfirst($_SESSION['username']); ?></h5>
+    <h5 class="mb-0"><?php echo ucfirst($username); ?></h5>
   </div>
 
   <div class="d-flex justify-content-around my-3">
@@ -54,22 +55,29 @@ include './backend/conn.php';
     </a>
   </div>
   <?php
-  $query = "SELECT * FROM parent INNER JOIN student ON ";
-
+  $query = "SELECT 
+            parent.*, 
+            student.*, 
+            adviser.*
+          FROM parent
+          INNER JOIN student ON parent.student = student.id
+          INNER JOIN adviser ON adviser.id = student.adviser
+          WHERE parent.id = '$id'";
+  $result = mysqli_query($conn, $query);
+  $row = mysqli_fetch_assoc($result);
   ?>
   <div class="text-center mb-3">
     <img src="Pictures/person_icon.png" alt="person_icon" class="mb-2 person_icon" width="150" height="150" />
-    <h5 class="mt-2">ADVISER</h5>
-    <p>Section - A</p>
+    <h5 class="mt-2"><?php echo htmlspecialchars($row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname']); ?></h5>
+    <p>Section - <?php echo htmlspecialchars($row['section']); ?></p>
   </div>
 
   <div class="card-section p-3 mb-3">
-    <input class="form-control mb-2" type="text" placeholder="Name:" readonly>
-    <input class="form-control mb-2" type="text" placeholder="School ID:" readonly>
-    <input class="form-control mb-2" type="text" placeholder="Section:" readonly>
-    <input class="form-control mb-2" type="email" placeholder="Email:" readonly>
-    <input class="form-control mb-2" type="text" placeholder="Address:" readonly>
-    <input class="form-control mb-2" type="text" placeholder="Contact No.:" readonly>
+    <input class="form-control mb-2" type="text" placeholder="Name:" readonly value="<?php echo htmlspecialchars($row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname']); ?>">
+    <input class="form-control mb-2" type="text" placeholder="School ID:" readonly value="<?php echo htmlspecialchars($row['school_id']); ?>">
+    <input class="form-control mb-2" type="text" placeholder="Section:" readonly value="<?php echo htmlspecialchars($row['section']); ?>">
+    <input class="form-control mb-2" type="email" placeholder="Email:" readonly value="<?php echo htmlspecialchars($row['email']); ?>">
+    <input class="form-control mb-2" type="text" placeholder="Contact No.:" readonly value="<?php echo htmlspecialchars($row['contact_no']); ?>">
   </div>
 
 </body>

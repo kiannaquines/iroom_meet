@@ -1,6 +1,7 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +38,7 @@ include './backend/conn.php';
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2" width="30" height="30">
-    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $_SESSION['username']; ?></h5>
+    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $username; ?></h5>
 
   </div>
 
@@ -59,10 +60,19 @@ include './backend/conn.php';
         </thead>
         <tbody>
           <?php
-          $query = mysqli_query($conn, "SELECT * FROM attendance WHERE name='" . $_SESSION['student_name'] . "' ORDER BY date DESC");
+          $query = mysqli_query($conn, "SELECT 
+                                attendance.*, 
+                                student.firstname, 
+                                student.middlename, 
+                                student.lastname
+                              FROM attendance
+                              INNER JOIN parent ON attendance.student = parent.student
+                              INNER JOIN student ON attendance.student = student.id
+                              WHERE parent.id = '$id'
+                              ORDER BY attendance.date DESC");
           while ($row = mysqli_fetch_assoc($query)) {
             $id = $row['id'];
-            $name = $row['name'];
+            $name = $row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname'];
             $status = $row['status'];
             $date = $row['date'];
 

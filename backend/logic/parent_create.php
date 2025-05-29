@@ -4,10 +4,9 @@ include './../conn.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $parent_name = $_POST['parent_name'];
-    $student_name = $_POST['student_name'];
+    $student = $_POST['student'];
     $student_id = $_POST['student_id'];
     $school_id = $_POST['school_id'];
-    $section = $_POST['section'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
@@ -22,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $sql = "INSERT INTO parent (`parent_name`, `student_name`, `student_id`, `school_id`, `section`, `email`, `password`, `type`) 
-            VALUES ('$parent_name', '$student_name', '$student_id', '$school_id', '$section', '$email','$password', 'parent')";
+    $sql = "INSERT INTO parent (`parent_name`, `student`, `student_id`, `school_id`, `email`, `password`, `type`) 
+            VALUES ('$parent_name', '$student', '$student_id', '$school_id', '$email','$password', 'parent')";
 
     if (mysqli_query($conn, $sql)) {
         header("Location: ./../../LoginParent.php");

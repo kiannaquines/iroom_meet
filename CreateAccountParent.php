@@ -73,30 +73,34 @@
 <body>
 
   <div class="profile-container">
-    <!-- Profile Image -->
+
     <img src="Pictures/person_icon.png" alt="person_icon" class="person_icon">
 
-    <!-- Role -->
     <h5 class="fw-bold">PARENT</h5>
     <p class="text-muted">Create a new parent account</p>
     
 
-    <!-- Form -->
     <form action="./backend/logic/parent_create.php" method="POST">
       <label class="form-label">Parent Username:</label>
       <input type="text" class="form-control" name="parent_name" placeholder="Enter parent username">
 
       <label class="form-label">Student Name:</label>
-      <input type="text" class="form-control" name="student_name" placeholder="Enter student name">
+      <select name="student" class="form-select">
+        <option value="" disabled selected>Select student</option>
+        <?php
+        include './backend/conn.php';
+        $query = mysqli_query($conn, "SELECT * FROM student");
+        while ($row = mysqli_fetch_assoc($query)) {
+          echo '<option value="' . $row['id'] . '">' . $row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname'] . '</option>';
+        }
+        ?>
+      </select>
 
       <label class="form-label">Student ID:</label>
       <input type="text" class="form-control" name="student_id" placeholder="Enter student ID">
 
       <label class="form-label">School ID:</label>
       <input type="text" class="form-control" name="school_id" placeholder="Enter school ID">
-
-      <label class="form-label">Section:</label>
-      <input type="text" class="form-control" name="section" placeholder="Enter section">
 
       <label class="form-label">Email:</label>
       <input type="email" class="form-control" name="email" placeholder="Enter email">

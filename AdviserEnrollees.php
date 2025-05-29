@@ -88,6 +88,17 @@ include './backend/logic/get_profile.php';
                   <input type="text" class="form-control" name="lastname" value="' . $row['lastname'] . '">
                 </div>
                 <div class="mb-3">
+                  <label class="form-label">Adviser</label>
+                  <select name="adviser" class="form-select">
+                    <option value="">Select Adviser</option>';
+            $adviser_query = mysqli_query($conn, "SELECT * FROM adviser");
+            while ($adviser_row = mysqli_fetch_assoc($adviser_query)) {
+              $selected = ($adviser_row['id'] == $row['adviser']) ? 'selected' : '';
+              echo '<option value="' . $adviser_row['id'] . '" ' . $selected . '>' . $adviser_row['name'] . '</option>';
+            }
+            echo '</select>
+                </div>
+                <div class="mb-3">
                   <label class="form-label">LRN</label>
                   <input type="text" class="form-control" name="lrn" value="' . $row['lrn'] . '">
                 </div>
@@ -128,6 +139,18 @@ include './backend/logic/get_profile.php';
             <div class="mb-3">
               <label for="student-lastname" class="form-label">Last Name</label>
               <input type="text" class="form-control" name="lastname" id="student-lastname" required>
+            </div>
+            <div class="mb-3">
+              <label for="student-lastname" class="form-label">Adviser</label>
+              <select name="adviser" class="form-select" id="student-adviser" required>
+                <option value="">Select Adviser</option>
+                <?php
+                $adviser_query = mysqli_query($conn, "SELECT * FROM adviser");
+                while ($adviser_row = mysqli_fetch_assoc($adviser_query)) {
+                  echo '<option value="' . $adviser_row['id'] . '">' . $adviser_row['name'] . '</option>';
+                }
+                ?>
+              </select>
             </div>
             <div class="mb-3">
               <label for="student-lrn" class="form-label">LRN</label>

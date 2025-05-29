@@ -8,12 +8,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $lastname = $_POST['lastname'];
     $lrn = $_POST['lrn'];
     $section = $_POST['section'];
+    $adviser = $_POST['adviser'];
 
     if (!$conn) {
         die("Database connection failed: " . mysqli_connect_error());
     }
 
-    $sql = "INSERT INTO `student`(`firstname`, `middlename`, `lastname`, `lrn`, `section`, `type`) VALUES ('$firstname','$middlename','$lastname','$lrn','$section','student')";
+    $sql = "INSERT INTO `student`(`firstname`, `middlename`, `lastname`, `lrn`, `section`, `type`, `adviser`) VALUES ('$firstname','$middlename','$lastname','$lrn','$section','student','$adviser')";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {

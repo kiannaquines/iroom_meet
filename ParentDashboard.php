@@ -1,6 +1,7 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,8 +117,8 @@ include './backend/conn.php';
   <div class="profile-card mb-4">
     <div class="mt-3">
       <img src="Pictures/person_icon.png" alt="person_icon" class="mb-2 person_icon" />
-      <h6><?php echo ucfirst($_SESSION['username']); ?></h6>
-      <p>Section</p>
+      <h6><?php echo ucfirst($username); ?></h6>
+      <p>Email: <?php echo $email; ?></p>
     </div>
   </div>
 

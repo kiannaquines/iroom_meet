@@ -20,14 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
         echo var_dump($user);
-        $_SESSION['username'] = $user['parent_name'];
-        $_SESSION['section'] = $user['section'];
         $_SESSION['id'] = $user['id'];
-        $_SESSION['school_id'] = $user['school_id'];
-        $_SESSION['email'] = $user['email'];
-        $_SESSION['contact_no'] = $user['contact_no'];
-        $_SESSION['is_loggedin'] = true;
-        $_SESSION['student_name'] = $user['student_name'] ?? '';
         $_SESSION['role'] = 'parent';
         header("Location: ./../../ParentDashboard.php");
         exit;

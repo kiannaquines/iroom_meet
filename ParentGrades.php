@@ -1,6 +1,7 @@
 <?php
 session_start();
 include './backend/conn.php';
+include './backend/logic/get_profile.php';
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +29,7 @@ include './backend/conn.php';
       <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
     </a>
     <img src="Pictures/person_icon.png" alt="person_icon" class="me-2 person_icon" width="30" height="30">
-    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo $_SESSION['username']; ?></h5>
+    <h5 class="mb-0" style="text-transform: uppercase;"><?php echo ucfirst($username); ?></h5>
   </div>
 
   <?php include './backend/includes/_header_parent.php'; ?>
@@ -64,10 +65,22 @@ include './backend/conn.php';
           </thead>
           <tbody>
             <?php
-            $query = mysqli_query($conn, "SELECT * FROM grades WHERE student = '" . $_SESSION['student_name'] . "' ORDER BY date DESC");
+            $query = mysqli_query($conn, 
+              "SELECT 
+                          student.firstname, 
+                          student.lastname,
+                          grades.subject,
+                          grades.grade,
+                          grades.quarter,
+                          grades.date
+                      FROM parent
+                      INNER JOIN grades ON parent.student = grades.student
+                      OUTER JOIN student ON parent.student = student.id
+                      WHERE parent.id = '$id'
+          ");
             while ($row = mysqli_fetch_assoc($query)) {
               echo '<tr data-quarter="' . $row['quarter'] . '">
-                      <td>' . htmlspecialchars($row['student']) . '</td>
+                      <td>' . htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['lastname']) . '</td>	
                       <td>' . htmlspecialchars($row['subject']) . '</td>
                       <td>' . htmlspecialchars($row['grade']) . '</td>
                       <td>' . htmlspecialchars($row['quarter']) . '</td>
