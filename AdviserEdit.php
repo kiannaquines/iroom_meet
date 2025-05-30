@@ -14,7 +14,6 @@ include './backend/logic/get_profile.php';
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     body {
-
       background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
       min-height: 100vh;
     }
